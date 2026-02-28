@@ -26,15 +26,22 @@ class QRHelper
         // QRcode::png($url, $path, 'L', 4, 2);
         // ---
 
-        // Temporary stub if library is not loaded to prevent application breaking
+        // Temporary fallback to Web API for "Real" QR Codes if library is not loaded
         if (!file_exists($path) && !class_exists('QRcode')) {
-            // Create a dummy placeholder image
-            $img = imagecreate(200, 200);
-            imagecolorallocate($img, 240, 240, 240); // bg
-            $tc = imagecolorallocate($img, 0, 0, 0); // text
-            imagestring($img, 3, 20, 90, "QR Stub: " . $serialNumber, $tc);
-            imagepng($img, $path);
-            imagedestroy($img);
+            $apiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" . urlencode($url);
+            $imgData = @file_get_contents($apiUrl);
+            if ($imgData) {
+                file_put_contents($path, $imgData);
+            }
+            else {
+                // Secondary fallback: dummy placeholder image
+                $img = imagecreate(200, 200);
+                imagecolorallocate($img, 240, 240, 240); // bg
+                $tc = imagecolorallocate($img, 0, 0, 0); // text
+                imagestring($img, 3, 20, 90, "QR API Fail: " . $serialNumber, $tc);
+                imagepng($img, $path);
+                imagedestroy($img);
+            }
         }
 
         return '/uploads/qrcodes/' . $filename;

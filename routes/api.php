@@ -29,6 +29,8 @@ $router->delete('/api/clients/{id}', ['ClientController', 'destroy']);
 $router->get('/api/extinguishers', ['ExtinguisherController', 'index']);
 $router->post('/api/extinguishers', ['ExtinguisherController', 'store']);
 $router->get('/api/extinguishers/{id}', ['ExtinguisherController', 'show']);
+$router->put('/api/extinguishers/{id}', ['ExtinguisherController', 'update']);
+$router->delete('/api/extinguishers/{id}', ['ExtinguisherController', 'destroy']);
 
 // Inspections
 $router->get('/api/inspections', ['InspectionController', 'index']);
