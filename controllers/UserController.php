@@ -49,9 +49,30 @@ class UserController extends Controller
 
         // 1. Company User self-signup
         if ($role['name'] === 'Company User') {
-            if (!$this->validateRequiredParams(['password'], $data)) {
-                $this->jsonResponse(["message" => "Password is required for Company User signup"], 400);
+            if (!$this->validateRequiredParams(['password', 'company_name', 'phone', 'address'], $data)) {
+                $this->jsonResponse(["message" => "Missing required fields for Company User signup: password, company_name, phone, address"], 400);
             }
+
+            // Create Client Profile First
+            $clientModel = new Client();
+            $clientData = [
+                'company_name' => $data['company_name'],
+                'contact_person' => isset($data['name']) ? $data['name'] : null,
+                'phone' => $data['phone'],
+                'email' => $data['email'],
+                'address' => $data['address'],
+                'gps_lat' => isset($data['gps_lat']) ? $data['gps_lat'] : null,
+                'gps_lng' => isset($data['gps_lng']) ? $data['gps_lng'] : null,
+                'delivery_instructions' => isset($data['delivery_instructions']) ? $data['delivery_instructions'] : null,
+            ];
+
+            $clientId = $clientModel->create($clientData);
+            if (!$clientId) {
+                $this->jsonResponse(["message" => "Failed to create Client profile during registration"], 500);
+            }
+
+            // Link newly created client ID to the user as their primary company_id
+            $data['company_id'] = $clientId;
         }
         // 2. Admin creation by Super Admin
         else if ($role['name'] === 'Admin') {

@@ -53,7 +53,7 @@ class Router
                 array_shift($matches); // Remove the full match
 
                 // Call the callback
-                if (is_callable($route['callback'])) {
+                if (is_callable($route['callback']) && !is_array($route['callback'])) {
                     call_user_func_array($route['callback'], $matches);
                 }
                 elseif (is_array($route['callback']) && count($route['callback']) === 2) {
