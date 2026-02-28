@@ -1,0 +1,65 @@
+############################
+# Environment / Secrets
+############################
+.env
+.env.*
+config/database.php
+config/*.local.php
+
+############################
+# Logs
+############################
+/logs/
+/*.log
+error_log
+
+############################
+# Uploads (User files)
+############################
+/uploads/
+/uploads/qrcodes/
+/uploads/reports/
+
+############################
+# Cache / Temp
+############################
+/cache/
+/tmp/
+/sessions/
+
+############################
+# Vendor (if using Composer)
+############################
+/vendor/
+
+############################
+# Node (if frontend build exists)
+############################
+/node_modules/
+
+############################
+# OS Generated Files
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# IDE Files
+############################
+.vscode/
+.idea/
+*.swp
+
+############################
+# Backup Files
+############################
+*.bak
+*.zip
+*.tar
+*.gz
+
+############################
+# Generated Reports
+############################
+*.pdf
+*.xlsx
