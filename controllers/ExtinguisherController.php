@@ -21,29 +21,55 @@ class ExtinguisherController extends Controller
         AuthMiddleware::hasRole(['Super Admin', 'Admin']);
         $data = $this->getJsonInput();
 
-        require_once __DIR__ . '/../helpers/qr_helper.php';
-        require_once __DIR__ . '/../helpers/pdf_helper.php';
+        return $this->createSingle($data);
+    }
 
-        if (!$this->validateRequiredParams(['type', 'capacity', 'client_id'], $data)) {
-            $this->jsonResponse(["message" => "Type, capacity and client_id are required fields"], 400);
+    public function bulkStore()
+    {
+        AuthMiddleware::hasRole(['Super Admin', 'Admin']);
+        $data = $this->getJsonInput();
+
+        if (!isset($data['count']) || !is_numeric($data['count'])) {
+            $this->jsonResponse(["message" => "Count is required for bulk registration"], 400);
         }
+
+        $count = (int)$data['count'];
+        if ($count < 2 || $count > 100) {
+            $this->jsonResponse(["message" => "Count must be between 2 and 100"], 400);
+        }
+
+        $results = [];
+        for ($i = 0; $i < $count; $i++) {
+            $results[] = $this->createSingle($data, true);
+        }
+
+        $this->jsonResponse([
+            "message" => "Successfully registered $count extinguishers",
+            "results" => $results
+        ], 201);
+    }
+
+    private function createSingle($data, $isBulk = false)
+    {
+        require_once __DIR__ . '/../helpers/qr_helper.php';
+
+        if (!$this->validateRequiredParams(['type', 'capacity'], $data)) {
+            if ($isBulk)
+                return ["error" => "Missing required fields"];
+            $this->jsonResponse(["message" => "Type and capacity are required fields"], 400);
+        }
+
+        $data['client_id'] = isset($data['client_id']) ? $data['client_id'] : null;
 
         // Generate unique serial number (e.g., FEMS-YYYYMMDD-uniqid)
         $data['serial_number'] = 'FEMS-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
-
-        // Note: QR code generation would logically happen here using a helper.
-        // File path assigned preemptively.
         $data['qr_code_path'] = '/uploads/qrcodes/' . $data['serial_number'] . '.png';
 
         if (!empty($data['manufacturing_date']) && !empty($data['filling_date'])) {
             if (strtotime($data['manufacturing_date']) > strtotime($data['filling_date'])) {
+                if ($isBulk)
+                    return ["error" => "Invalid dates"];
                 $this->jsonResponse(["message" => "Manufacturing date cannot be after filling date"], 400);
-            }
-        }
-
-        if (!empty($data['filling_date']) && !empty($data['expiry_date'])) {
-            if (strtotime($data['filling_date']) > strtotime($data['expiry_date'])) {
-                $this->jsonResponse(["message" => "Filling date cannot be after expiry date"], 400);
             }
         }
 
@@ -52,21 +78,8 @@ class ExtinguisherController extends Controller
             // Generate QR Code
             $qrPath = QRHelper::generate($id, $data['serial_number']);
 
-            // Generate Initial Inspection Label (PDF)
-            // Fetch client name for the label
-            $clientModel = new Client();
-            $client = $clientModel->findById($data['client_id']);
-            $clientName = $client ? $client['company_name'] : 'Unknown';
-
-            require_once __DIR__ . '/../helpers/pdf_helper.php';
-            $pdfPath = PDFHelper::generateLabel($id, [
-                'serial_number' => $data['serial_number'],
-                'type' => $data['type'],
-                'capacity' => $data['capacity'],
-                'client_name' => $clientName,
-                'filling_date' => $data['filling_date'],
-                'expiry_date' => $data['expiry_date']
-            ]);
+            // PDF Inspection Label generation is now deferred to the Order Flow stage.
+            $pdfPath = null;
 
             // Update record with actual file paths
             $ext = $this->extModel->findById($id);
@@ -74,14 +87,21 @@ class ExtinguisherController extends Controller
             $ext['label_pdf_path'] = $pdfPath;
             $this->extModel->update($id, $ext);
 
-            $this->jsonResponse([
-                "message" => "Extinguisher created successfully",
+            $result = [
                 "id" => $id,
                 "serial_number" => $data['serial_number'],
                 "qr_path" => $qrPath,
                 "pdf_path" => $pdfPath
-            ], 201);
+            ];
+
+            if ($isBulk)
+                return $result;
+
+            $this->jsonResponse(array_merge(["message" => "Extinguisher created successfully"], $result), 201);
         }
+
+        if ($isBulk)
+            return ["error" => "Creation failed"];
         $this->jsonResponse(["message" => "Failed to create extinguisher"], 500);
     }
 
