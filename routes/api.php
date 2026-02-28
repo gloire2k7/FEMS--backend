@@ -33,9 +33,12 @@ $router->get('/api/extinguishers/{id}', ['ExtinguisherController', 'show']);
 $router->put('/api/extinguishers/{id}', ['ExtinguisherController', 'update']);
 $router->delete('/api/extinguishers/{id}', ['ExtinguisherController', 'destroy']);
 
-// Inspections
-$router->get('/api/inspections', ['InspectionController', 'index']);
-$router->post('/api/inspections', ['InspectionController', 'store']);
+// Orders
+$router->get('/api/orders', ['OrderController', 'index']);
+$router->post('/api/orders', ['OrderController', 'store']);
+$router->get('/api/orders/{id}', ['OrderController', 'show']);
+$router->put('/api/orders/{id}/grant', ['OrderController', 'grant']);
+$router->put('/api/orders/{id}/confirm', ['OrderController', 'confirm']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];

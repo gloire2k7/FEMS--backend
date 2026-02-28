@@ -70,4 +70,24 @@ class Extinguisher extends Model
 
         return $stmt->execute();
     }
+    public function findAvailableInStock($type, $capacity, $limit)
+    {
+        $query = "SELECT * FROM " . $this->table . " WHERE client_id IS NULL AND type = :type AND capacity = :capacity LIMIT :limit";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':type', $type);
+        $stmt->bindParam(':capacity', $capacity);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function allocateToOrder($id, $clientId, $orderId)
+    {
+        $query = "UPDATE " . $this->table . " SET client_id = :client_id, order_id = :order_id WHERE id = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':client_id', $clientId);
+        $stmt->bindParam(':order_id', $orderId);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
 }
