@@ -2,7 +2,13 @@
 # custom
 ############################
 cookies.txt
+admin_cookies.txt
+client_cookies.txt
+test_cookies.txt
 test_login.php
+test_db.php
+check_db.php
+seed_test.php
 
 ############################
 # Environment / Secrets

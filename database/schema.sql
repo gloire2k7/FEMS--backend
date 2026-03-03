@@ -50,18 +50,33 @@ CREATE TABLE `fire_extinguishers` (
     `qr_code_path` VARCHAR(255),
     `type` VARCHAR(50) NOT NULL,
     `capacity` VARCHAR(50) NOT NULL,
-    `status` ENUM('filled', 'unfilled', 'under_maintenance', 'condemned', 'expired') DEFAULT 'filled',
+    `status` ENUM('filled', 'unfilled', 'under_maintenance', 'condemned', 'expired', 'requires_refill', 'requires_maintenance') DEFAULT 'filled',
     `manufacturing_date` DATE,
     `filling_date` DATE,
     `expiry_date` DATE,
     `pressure_status` VARCHAR(50),
     `cylinder_condition` VARCHAR(50),
-    `client_id` INT NOT NULL,
+    `client_id` INT NULL,
     `location_id` INT,
+    `order_id` INT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (`client_id`) REFERENCES `clients`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`client_id`) REFERENCES `clients`(`id`) ON DELETE SET NULL,
     FOREIGN KEY (`location_id`) REFERENCES `locations`(`id`) ON DELETE SET NULL
 );
+
+CREATE TABLE `orders` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `client_id` INT NOT NULL,
+    `type` VARCHAR(50) NOT NULL,
+    `capacity` VARCHAR(50) NOT NULL,
+    `quantity` INT NOT NULL,
+    `status` ENUM('pending', 'granted', 'delivered', 'cancelled') DEFAULT 'pending',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`client_id`) REFERENCES `clients`(`id`) ON DELETE CASCADE
+);
+
+ALTER TABLE fire_extinguishers ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE SET NULL;
 
 CREATE INDEX idx_serial ON fire_extinguishers (serial_number);
 CREATE INDEX idx_expiry ON fire_extinguishers (expiry_date);

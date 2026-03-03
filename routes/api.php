@@ -40,6 +40,12 @@ $router->get('/api/orders/{id}', ['OrderController', 'show']);
 $router->put('/api/orders/{id}/grant', ['OrderController', 'grant']);
 $router->put('/api/orders/{id}/confirm', ['OrderController', 'confirm']);
 
+// Services (Refill & Maintenance)
+$router->post('/api/extinguishers/{id}/refill-request', ['ServiceController', 'requestRefill']);
+$router->post('/api/extinguishers/{id}/maintenance-request', ['ServiceController', 'requestMaintenance']);
+$router->put('/api/extinguishers/{id}/confirm-service', ['ServiceController', 'confirmRequest']);
+$router->put('/api/extinguishers/{id}/complete-service', ['ServiceController', 'completeService']);
+
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
 $router->dispatch($method, $uri);
