@@ -46,6 +46,9 @@ $router->post('/api/extinguishers/{id}/maintenance-request', ['ServiceController
 $router->put('/api/extinguishers/{id}/confirm-service', ['ServiceController', 'confirmRequest']);
 $router->put('/api/extinguishers/{id}/complete-service', ['ServiceController', 'completeService']);
 
+// Reports
+$router->get('/api/reports', ['ReportController', 'index']);
+
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
 $router->dispatch($method, $uri);

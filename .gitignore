@@ -28,9 +28,9 @@ error_log
 ############################
 # Uploads (User files)
 ############################
-/uploads/
-/uploads/qrcodes/
-/uploads/reports/
+*.pdf
+*.csv
+*.png
 
 ############################
 # Cache / Temp
