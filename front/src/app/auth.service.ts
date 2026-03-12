@@ -19,6 +19,12 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/users`, data);
   }
 
+  createAdmin(adminData: any): Observable<any> {
+    // role_id 2 for Admin
+    const data = { ...adminData, role_id: 2 };
+    return this.http.post(`${this.apiUrl}/users`, data, { withCredentials: true });
+  }
+
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true });
   }

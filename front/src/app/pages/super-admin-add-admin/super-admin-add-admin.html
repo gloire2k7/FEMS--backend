@@ -1,4 +1,4 @@
-﻿<div class="flex h-screen bg-[#F8FAFC] font-['Poppins'] overflow-hidden">
+<div class="flex h-screen bg-[#F8FAFC] font-['Poppins'] overflow-hidden">
     <!-- SIDEBAR -->
     <aside class="w-48 bg-[#0B1437] shrink-0 flex flex-col h-screen sticky top-0 z-50">
         <div class="px-4 py-4 mb-6 flex items-center gap-5">
@@ -123,6 +123,51 @@
                 <!-- LEFT COLUMN: FORM SECTIONS -->
                 <div class="col-span-8 space-y-6">
 
+                    <!-- Success/Error Message -->
+                    <div *ngIf="error" class="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-xl text-xs font-bold mb-6 flex items-center gap-4">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        {{ error }}
+                    </div>
+
+                    <div *ngIf="successData" class="bg-emerald-50 border border-emerald-100 p-8 rounded-2xl mb-8 relative overflow-hidden">
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-black text-[#0B1437] uppercase tracking-wider">Account Created Successfully</h3>
+                                    <p class="text-[12px] font-medium text-slate-500">Please copy and share these temporary credentials with the admin.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="bg-white/60 p-5 rounded-xl border border-emerald-100/50">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Username / Email</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[13px] font-bold text-[#0B1437]">{{ successData.email }}</span>
+                                        <button (click)="copyToClipboard(successData.email)" class="text-blue-600 hover:text-blue-700 p-1">
+                                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="bg-white/60 p-5 rounded-xl border border-emerald-100/50">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Temporary Password</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[13px] font-mono font-bold text-blue-600 tracking-wider">{{ successData.password }}</span>
+                                        <button (click)="copyToClipboard(successData.password)" class="text-blue-600 hover:text-blue-700 p-1">
+                                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Decoration -->
+                        <div class="absolute -right-10 -bottom-10 opacity-5">
+                            <i data-lucide="shield-check" class="w-32 h-32"></i>
+                        </div>
+                    </div>
+
                     <!-- PERSONAL INFORMATION -->
                     <div class="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
                         <div class="flex items-center gap-5 mb-8">
@@ -141,36 +186,14 @@
                             <div class="space-y-3.5">
                                 <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest">Full Name
                                     <span class="text-red-500">*</span></label>
-                                <input type="text" placeholder="e.g. Jane Doe"
+                                <input type="text" name="name" [(ngModel)]="name" placeholder="e.g. Jane Doe"
                                     class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-5 py-3.5 text-xs font-semibold focus:outline-none focus:border-blue-500/30 transition-all">
                             </div>
                             <div class="space-y-3.5">
                                 <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest">Email
                                     Address <span class="text-red-500">*</span></label>
-                                <input type="email" placeholder="admin@company.com"
+                                <input type="email" name="email" [(ngModel)]="email" placeholder="admin@company.com"
                                     class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-5 py-3.5 text-xs font-semibold focus:outline-none focus:border-blue-500/30 transition-all">
-                            </div>
-                            <div class="space-y-3.5">
-                                <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest">Phone
-                                    Number</label>
-                                <input type="text" placeholder="+1 (555) 000-0000"
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-5 py-3.5 text-xs font-semibold focus:outline-none focus:border-blue-500/30 transition-all">
-                            </div>
-                            <div class="space-y-3.5">
-                                <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest">Username
-                                    <span class="text-red-500">*</span></label>
-                                <input type="text" placeholder="jdoe_admin"
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-5 py-3.5 text-xs font-semibold focus:outline-none focus:border-blue-500/30 transition-all">
-                            </div>
-                            <div class="col-span-2 space-y-3.5">
-                                <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest">Temporary
-                                    Password <span class="text-red-500">*</span></label>
-                                <div class="flex gap-5">
-                                    <input type="text" placeholder="TempPass#2024!"
-                                        class="flex-1 bg-slate-50 border-2 border-slate-100 rounded-xl px-5 py-3.5 text-xs font-semibold focus:outline-none focus:border-blue-500/30 transition-all">
-                                    <button
-                                        class="px-5 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-[13px] font-bold text-slate-600 transition-all whitespace-nowrap uppercase tracking-widest">Generate</button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -332,9 +355,9 @@
 
                     <!-- ACTION BUTTONS -->
                     <div class="flex flex-col gap-5 pt-4">
-                        <button routerLink="/super-admin-admins"
-                            class="w-full bg-[#0B1437] text-white rounded-xl py-3.5 flex items-center justify-center gap-5 text-[13px] font-black uppercase tracking-widest hover:bg-[#1a2b5a] transition-all shadow-lg shadow-blue-900/10">
-                            Create Admin Account
+                        <button (click)="onCreateAdmin()" [disabled]="isLoading"
+                            class="w-full bg-[#0B1437] text-white rounded-xl py-3.5 flex items-center justify-center gap-5 text-[13px] font-black uppercase tracking-widest hover:bg-[#1a2b5a] transition-all shadow-lg shadow-blue-900/10 disabled:opacity-50">
+                            {{ isLoading ? 'Creating...' : 'Create Admin Account' }}
                         </button>
                         <div class="grid grid-cols-2 gap-5">
                             <button routerLink="/super-admin-dashboard"
