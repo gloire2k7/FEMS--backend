@@ -1,0 +1,260 @@
+﻿<div class="flex h-screen bg-[#F8FAFC] font-['Poppins'] overflow-hidden">
+    <!-- SIDEBAR -->
+    <aside class="w-48 bg-[#0B1437] shrink-0 flex flex-col h-screen sticky top-0">
+        <!-- LOGO -->
+        <div class="px-4 py-4 mb-6 flex items-center gap-5">
+            <div
+                class="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center p-1 shadow-lg shadow-blue-500/20">
+                <i data-lucide="flame" class="icon-xs text-white"></i>
+            </div>
+            <span class="text-xs font-black text-white tracking-[0.2em] leading-none">FEM</span>
+        </div>
+
+        <!-- NAV -->
+        <nav class="flex-1 px-3 flex flex-col pt-2 pb-8 overflow-y-auto scrollbar-hide text-slate-50">
+            <div>
+                <a routerLink="/admin-dashboard" routerLinkActive="bg-white/10 text-white"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="flex items-center gap-5.5 px-4 py-3 rounded-lg hover:bg-white/10 transition-all group cursor-pointer">
+                    <i data-lucide="layout-grid" class="icon-xs opacity-90 group-hover:opacity-100 shrink-0"></i>
+                    <span class="text-[13px] tracking-wide font-semibold">Dashboard</span>
+                </a>
+            </div>
+
+            <div class="mt-8 mb-6 pt-2">
+                <p class="text-[12px] font-black text-slate-100 uppercase tracking-[0.15em] px-3 mb-6">Operations</p>
+                <div class="space-y-3">
+                    <a routerLink="/clients" routerLinkActive="bg-white/10 text-white"
+                        class="flex items-center gap-5.5 px-4 py-3 rounded-lg hover:bg-white/10 transition-all group cursor-pointer">
+                        <i data-lucide="users" class="icon-xs opacity-90 group-hover:opacity-100 shrink-0"></i>
+                        <span class="text-[13px] tracking-wide font-semibold">Clients</span>
+                    </a>
+                    <a routerLink="/admin-locations" routerLinkActive="bg-white/10 text-white"
+                        class="flex items-center gap-5.5 px-4 py-3 rounded-lg hover:bg-white/10 transition-all group cursor-pointer">
+                        <i data-lucide="map-pin" class="icon-xs opacity-90 group-hover:opacity-100 shrink-0"></i>
+                        <span class="text-[13px] tracking-wide font-semibold">Locations</span>
+                    </a>
+                    <a routerLink="/admin-location-details"
+                        class="flex items-center gap-5.5 px-4 py-3 rounded-lg hover:bg-white/10 transition-all justify-between group cursor-pointer">
+                        <div class="flex items-center gap-5.5">
+                            <i data-lucide="flame" class="icon-xs opacity-90 group-hover:opacity-100 shrink-0"></i>
+                            <span class="text-[13px] tracking-wide font-semibold">Fire Extinguishers</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-2.5 h-2.5 opacity-60 group-hover:opacity-100"></i>
+                    </a>
+                    <div class="space-y-3">
+                        <a (click)="toggleInspections()"
+                            class="flex items-center gap-5.5 px-4 py-3 rounded-lg text-white hover:bg-white/20 transition-all justify-between group cursor-pointer"
+                            [class.bg-white/15]="inspectionsOpen">
+                            <div class="flex items-center gap-5.5">
+                                <i data-lucide="clipboard-check"
+                                    class="icon-xs opacity-90 group-hover:opacity-100 shrink-0"></i>
+                                <span class="text-[13px] tracking-wide font-semibold">Inspections</span>
+                            </div>
+                            <i [attr.data-lucide]="inspectionsOpen ? 'chevron-up' : 'chevron-down'"
+                                class="w-2.5 h-2.5 opacity-60 group-hover:opacity-100"></i>
+                        </a>
+
+                        <div *ngIf="inspectionsOpen" class="pl-9 space-y-3 mt-1">
+                            <a routerLink="/admin-assigned-inspections" routerLinkActive="text-white !font-black"
+                                class="block py-1.5 text-[12px] font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer">
+                                Assigned
+                            </a>
+                            <a routerLink="/admin-inspection-label/LE-2023-894"
+                                routerLinkActive="text-white !font-black"
+                                class="block py-1.5 text-[12px] font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer">
+                                Inspection Label
+                            </a>
+                            <a routerLink="/admin-inspectors" routerLinkActive="text-white !font-black"
+                                class="block py-1.5 text-[12px] font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer">
+                                Inspectors
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 mb-6 pt-2">
+                <p class="text-[12px] font-black text-slate-100 uppercase tracking-[0.15em] px-3 mb-6">Management</p>
+                <div class="space-y-3">
+                    <a routerLink="/admin-compliance"
+                        class="flex items-center gap-5.5 px-4 py-3 rounded-lg hover:bg-white/10 transition-all justify-between group cursor-pointer">
+                        <div class="flex items-center gap-5.5">
+                            <i data-lucide="shield-check"
+                                class="icon-xs opacity-90 group-hover:opacity-100 shrink-0"></i>
+                            <span class="text-[13px] tracking-wide font-semibold">Compliance</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-2.5 h-2.5 opacity-60 group-hover:opacity-100"></i>
+                    </a>
+                    <a
+                        class="flex items-center gap-5.5 px-4 py-3 rounded-lg hover:bg-white/10 transition-all justify-between group cursor-pointer">
+                        <div class="flex items-center gap-5.5">
+                            <i data-lucide="repeat" class="icon-xs opacity-90 group-hover:opacity-100 shrink-0"></i>
+                            <span class="text-[13px] tracking-wide font-semibold">Refills</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-2.5 h-2.5 opacity-60 group-hover:opacity-100"></i>
+                    </a>
+                    <a routerLink="/admin-settings"
+                        class="flex items-center gap-5.5 px-4 py-3 rounded-lg hover:bg-white/10 transition-all justify-between group cursor-pointer">
+                        <div class="flex items-center gap-5.5">
+                            <i data-lucide="settings" class="icon-xs opacity-80 group-hover:opacity-100 shrink-0"></i>
+                            <span class="text-[13px] tracking-wide font-semibold">Settings</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-2.5 h-2.5 opacity-50 group-hover:opacity-100"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- PROFILE BLOCK -->
+        <div class="px-3 pb-6 mt-auto">
+            <div
+                class="bg-white/5 rounded-xl p-3 flex items-center gap-5.5 border border-white/5 hover:bg-white/10 cursor-pointer group">
+                <div
+                    class="w-8 h-8 rounded-full bg-amber-400 flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-white/10 group-hover:scale-105 transition-transform">
+                    <img src="https://ui-avatars.com/api/?name=Usanase&background=FFC107&color=fff" alt="Profile"
+                        class="w-full h-full object-cover">
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[11px] font-black text-slate-300 uppercase tracking-widest leading-tight">ADMIN</p>
+                    <p class="text-[13px] font-black text-white truncate">Usanase</p>
+                </div>
+                <i data-lucide="log-out"
+                    class="icon-xs text-slate-400 ml-auto opacity-40 group-hover:opacity-100 group-hover:text-red-400 transition-all"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col bg-[#F8FAFC] overflow-y-auto">
+        <!-- TOPBAR -->
+        <header
+            class="h-12 bg-white flex items-center justify-between px-6 sticky top-0 z-10 w-full border-b border-slate-100 shadow-sm shadow-slate-200/50">
+            <div class="relative w-64">
+                <i data-lucide="search"
+                    class="icon-xs absolute left-3 top-1/2 -translate-y-1/2 text-blue-500/50 shrink-0"></i>
+                <input type="text" placeholder="Search for something..."
+                    class="w-full pl-9 pr-4 py-2 bg-slate-50 border-none rounded-xl text-[13px] focus:outline-none focus:ring-1 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 font-medium font-bold">
+            </div>
+            <div class="flex items-center gap-5">
+                <div class="relative"><button
+                        class="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-50 shadow-sm transition-all"><i
+                            data-lucide="shopping-cart" class="icon-xs"></i><span
+                            class="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white"></span></button>
+                </div>
+                <div class="relative"><button
+                        class="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-red-500/80 hover:bg-red-50 shadow-sm transition-all"><i
+                            data-lucide="bell" class="icon-xs"></i><span
+                            class="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white"></span></button>
+                </div>
+                <button routerLink="/admin-settings"
+                    class="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-blue-500/80 hover:bg-blue-50 shadow-sm transition-all"><i
+                        data-lucide="settings" class="icon-xs"></i></button>
+            </div>
+        </header>
+
+        <!-- PAGE CONTENT -->
+        <div class="p-8 max-w-4xl mx-auto w-full space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <!-- SECTION: UPLOAD -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Upload File</h3>
+                <div
+                    class="upload-container rounded-[24px] p-12 flex flex-col items-center justify-center space-y-4 cursor-pointer hover:bg-blue-50/50 transition-all border-none">
+                    <div
+                        class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:text-blue-500 transition-colors">
+                        <i data-lucide="upload-cloud" class="icon-md"></i>
+                    </div>
+                    <p class="text-[14px] font-bold text-slate-400">Max 100 MB, PNG, JPEG, MP3, MP4</p>
+                    <button
+                        class="px-8 py-2.5 bg-black text-white rounded-xl text-[14px] font-black hover:bg-slate-800 transition-all active:scale-95">Browse
+                        File</button>
+                </div>
+            </div>
+
+            <!-- SECTION: PURCHASE TYPE -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Purchase Type</h3>
+                <div class="grid grid-cols-3 gap-6">
+                    <div (click)="setPurchaseType('Fixed Price')"
+                        [ngClass]="purchaseType === 'Fixed Price' ? 'border-blue-600 ring-1 ring-blue-600 bg-blue-50/20' : 'border-slate-100 bg-white'"
+                        class="type-card p-8 rounded-[24px] border border-2 cursor-pointer hover:shadow-md transition-all space-y-3">
+                        <h4 class="text-xs font-black text-slate-900">Fixed Price</h4>
+                        <p class="text-[13px] font-bold text-slate-400 leading-relaxed">Set fixed price for people to
+                            buy your product instantly</p>
+                    </div>
+                    <div (click)="setPurchaseType('Timed Auction')"
+                        [ngClass]="purchaseType === 'Timed Auction' ? 'border-blue-600 ring-1 ring-blue-600 bg-blue-50/20' : 'border-slate-100 bg-white'"
+                        class="type-card p-8 rounded-[24px] border border-2 cursor-pointer hover:shadow-md transition-all space-y-3 opacity-50">
+                        <h4 class="text-xs font-black text-slate-900">Timed Auction</h4>
+                        <p class="text-[13px] font-bold text-slate-400 leading-relaxed">Set fixed price for people to
+                            buy your product instantly</p>
+                    </div>
+                    <div (click)="setPurchaseType('Open for Bids')"
+                        [ngClass]="purchaseType === 'Open for Bids' ? 'border-blue-600 ring-1 ring-blue-600 bg-blue-50/20' : 'border-slate-100 bg-white'"
+                        class="type-card p-8 rounded-[24px] border border-2 cursor-pointer hover:shadow-md transition-all space-y-3 opacity-50">
+                        <h4 class="text-xs font-black text-slate-900">Open for Bids</h4>
+                        <p class="text-[13px] font-bold text-slate-400 leading-relaxed">Set fixed price for people to
+                            buy your product instantly</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: MAIN DETAILS -->
+            <div class="space-y-6">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Main Details</h3>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Title</label>
+                        <input type="text" [(ngModel)]="formData.title"
+                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Price</label>
+                        <input type="text" [(ngModel)]="formData.price"
+                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="space-y-3">
+                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Capacity</label>
+                        <input type="text" [(ngModel)]="formData.capacity"
+                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Category</label>
+                        <input type="text" [(ngModel)]="formData.category"
+                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Origin</label>
+                        <input type="text" [(ngModel)]="formData.origin"
+                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Currency</label>
+                        <input type="text" [(ngModel)]="formData.currency"
+                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Description</label>
+                    <textarea rows="6" [(ngModel)]="formData.description"
+                        class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-[24px] text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20 resize-none"
+                        placeholder="Provide a detailed description of the extinguisher unit..."></textarea>
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="pt-6">
+                <button (click)="saveUnit()"
+                    class="px-10 py-4 bg-[#0B1437] text-white rounded-2xl text-xs font-black hover:bg-blue-900 transition-all shadow-xl shadow-blue-900/20 active:scale-95 flex items-center gap-5">
+                    <i data-lucide="save" class="icon-xs"></i>
+                    Save Unit
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
