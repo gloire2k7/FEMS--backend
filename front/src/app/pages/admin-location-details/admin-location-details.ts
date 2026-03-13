@@ -21,6 +21,7 @@ export class AdminLocationDetails implements OnInit, AfterViewInit {
   inspectionsOpen = true;
   isLoading = false;
   searchExtinguisherQuery = '';
+  stockFilter: 'all' | 'inStock' | 'withClient' = 'all';
   
   allExtinguishers: any[] = [];
   filteredExtinguishers: any[] = [];
@@ -58,15 +59,15 @@ export class AdminLocationDetails implements OnInit, AfterViewInit {
   }
 
   applyFilter() {
-    if (!this.searchExtinguisherQuery) {
-      this.filteredExtinguishers = this.allExtinguishers;
-    } else {
-      const query = this.searchExtinguisherQuery.toLowerCase();
-      this.filteredExtinguishers = this.allExtinguishers.filter(ext => 
-        ext.serial_number.toLowerCase().includes(query) || 
-        ext.type.toLowerCase().includes(query)
-      );
-    }
+    const query = this.searchExtinguisherQuery.toLowerCase();
+    this.filteredExtinguishers = this.allExtinguishers.filter(ext => {
+      const matchSearch = !query || ext.serial_number?.toLowerCase().includes(query) || ext.type?.toLowerCase().includes(query);
+      const matchStock =
+        this.stockFilter === 'all' ||
+        (this.stockFilter === 'inStock' && !ext.client_id) ||
+        (this.stockFilter === 'withClient' && !!ext.client_id);
+      return matchSearch && matchStock;
+    });
     this.currentPage = 1;
     this.updatePagination();
   }

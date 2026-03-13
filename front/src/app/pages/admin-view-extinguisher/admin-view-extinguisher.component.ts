@@ -98,4 +98,10 @@ export class AdminViewExtinguisherComponent implements OnInit, AfterViewInit {
             default: return '#D97706';
         }
     }
+
+    downloadLabel() {
+        if (this.extinguisher?.label_pdf_path) {
+            window.open(`http://localhost:8000${this.extinguisher.label_pdf_path}`, '_blank');
+        }
+    }
 }

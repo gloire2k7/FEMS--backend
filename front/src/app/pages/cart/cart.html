@@ -64,13 +64,13 @@
                                 <div>
                                     <h4
                                         class="text-[14px] font-black text-[#0B1228] leading-tight mb-1 cursor-pointer hover:text-blue-600 transition-colors">
-                                        {{ item.name }}</h4>
-                                    <p class="text-[11px] font-medium text-slate-400">Type: <span
-                                            class="text-slate-500">{{ item.type }}</span></p>
+                                        {{ item.type }} Extinguisher</h4>
+                                    <p class="text-[11px] font-medium text-slate-400">Category: <span
+                                            class="text-slate-500 uppercase">{{ item.type }}</span></p>
                                     <p class="text-[11px] font-medium text-slate-400">Capacity: <span
                                             class="text-slate-500">{{ item.capacity }}</span></p>
                                 </div>
-                                <span class="text-[15px] font-black text-[#0B1228] shrink-0">${{ item.price }}.00</span>
+                                <span class="text-[15px] font-black text-[#0B1228] shrink-0">{{ item.price | number:'1.0-0' }} RWF</span>
                             </div>
 
                             <!-- Qty controls + subtotal + delete -->
@@ -79,16 +79,14 @@
                                     class="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                                     <button (click)="decrease(item)"
                                         class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-[#0B1228] hover:bg-slate-50 transition-all text-sm font-bold border-r border-slate-100">−</button>
-                                    <span class="w-10 text-center text-[11px] font-black text-[#0B1228]">{{ item.qty
-                                        }}</span>
+                                    <span class="w-10 text-center text-[11px] font-black text-[#0B1228]">{{ item.quantity }}</span>
                                     <button (click)="increase(item)"
                                         class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-[#0B1228] hover:bg-slate-50 transition-all text-sm font-bold border-l border-slate-100">+</button>
                                 </div>
                                 <div class="flex items-center gap-5">
                                     <span
                                         class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Subtotal:
-                                        <span class="text-[#0B1228] font-black ml-1">${{ item.price * item.qty
-                                            }}.00</span></span>
+                                        <span class="text-[#0B1228] font-black ml-1">{{ (item.price * item.quantity) | number:'1.0-0' }} RWF</span></span>
                                     <button (click)="removeItem(i)"
                                         class="text-slate-300 hover:text-red-500 transition-colors p-1 group">
                                         <svg class="w-4 h-4 group-hover:scale-110 transition-transform"
@@ -134,23 +132,21 @@
                     <div>
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Company Name
                         </p>
-                        <p class="text-[13px] font-black text-[#0B1228]">TechSafe Industries Ltd.</p>
+                        <p class="text-[13px] font-black text-[#0B1228]">{{ client?.company_name || 'Not Available' }}</p>
                     </div>
                     <div>
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Contact Person
                         </p>
-                        <p class="text-[13px] font-black text-[#0B1228]">Michael Chen</p>
+                        <p class="text-[13px] font-black text-[#0B1228]">{{ client?.contact_person || 'Not Available' }}</p>
                     </div>
                     <div class="col-span-2">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Delivery
-                            Address</p>
-                        <p class="text-[12px] font-bold text-[#0B1228]">Warehouse B, 45 Industrial Parkway, Innovation
-                            District, 10293</p>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Address</p>
+                        <p class="text-[12px] font-bold text-[#0B1228]">{{ client?.address || 'Not Available' }}</p>
                     </div>
                     <div>
                         <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Phone Number
                         </p>
-                        <p class="text-[13px] font-black text-[#0B1228]">+1 (555) 123-4567</p>
+                        <p class="text-[13px] font-black text-[#0B1228]">{{ client?.phone || 'Not Available' }}</p>
                     </div>
                 </div>
             </div>
@@ -164,15 +160,15 @@
                 <div class="flex flex-col gap-4 mb-6">
                     <div class="flex items-center justify-between">
                         <span class="text-[12px] font-medium text-slate-500">Subtotal ({{ totalItems }} items)</span>
-                        <span class="text-[13px] font-black text-[#0B1228]">${{ subtotal }}.00</span>
+                        <span class="text-[13px] font-black text-[#0B1228]">{{ subtotal | number:'1.0-0' }} RWF</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-[12px] font-medium text-slate-500">Taxes (VAT 10%)</span>
-                        <span class="text-[13px] font-black text-[#0B1228]">${{ taxes }}.00</span>
+                        <span class="text-[13px] font-black text-[#0B1228]">{{ taxes | number:'1.0-0' }} RWF</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-[12px] font-medium text-slate-500">Delivery Fee</span>
-                        <span class="text-[13px] font-black text-[#0B1228]">${{ deliveryFee }}.00</span>
+                        <span class="text-[13px] font-black text-[#0B1228]">{{ deliveryFee | number:'1.0-0' }} RWF</span>
                     </div>
                 </div>
 
@@ -180,7 +176,7 @@
                     <div class="flex items-start justify-between">
                         <span class="text-[13px] font-black text-[#0B1228]">Grand Total</span>
                         <div class="text-right">
-                            <p class="text-[24px] font-black text-[#0B1228] leading-none">${{ grandTotal }}.00</p>
+                            <p class="text-[24px] font-black text-[#0B1228] leading-none">{{ grandTotal | number:'1.0-0' }} RWF</p>
                             <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase">Inclusive of all taxes</p>
                         </div>
                     </div>

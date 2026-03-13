@@ -360,21 +360,36 @@
 
             <!-- SEARCH & TOOLS -->
             <div class="flex justify-between items-center bg-white p-8 rounded-[16px] shadow-sm">
-                <div class="relative w-96">
-                    <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" [(ngModel)]="searchExtinguisherQuery" (ngModelChange)="applyFilter()"
-                        placeholder="Search by serial number or type..."
-                        class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-[15px] focus:outline-none placeholder:text-slate-400 font-medium tracking-tight">
+                <div class="flex items-center gap-5">
+                    <div class="relative w-72">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" [(ngModel)]="searchExtinguisherQuery" (ngModelChange)="applyFilter()"
+                            placeholder="Search by serial or type..."
+                            class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-[15px] focus:outline-none placeholder:text-slate-400 font-medium tracking-tight">
+                    </div>
+                    <!-- Stock Filters -->
+                    <div class="flex items-center gap-5 bg-slate-50 rounded-xl p-1.5">
+                        <button (click)="stockFilter = 'all'; applyFilter()"
+                            [class.bg-white]="stockFilter === 'all'" [class.shadow-sm]="stockFilter === 'all'"
+                            [class.text-[#0B1437]]="stockFilter === 'all'" [class.font-black]="stockFilter === 'all'"
+                            class="px-4 py-1.5 rounded-lg text-[13px] font-semibold text-slate-500 transition-all">
+                            All
+                        </button>
+                        <button (click)="stockFilter = 'inStock'; applyFilter()"
+                            [class.bg-white]="stockFilter === 'inStock'" [class.shadow-sm]="stockFilter === 'inStock'"
+                            [class.text-emerald-700]="stockFilter === 'inStock'" [class.font-black]="stockFilter === 'inStock'"
+                            class="px-4 py-1.5 rounded-lg text-[13px] font-semibold text-slate-500 transition-all flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> In Stock
+                        </button>
+                        <button (click)="stockFilter = 'withClient'; applyFilter()"
+                            [class.bg-white]="stockFilter === 'withClient'" [class.shadow-sm]="stockFilter === 'withClient'"
+                            [class.text-blue-700]="stockFilter === 'withClient'" [class.font-black]="stockFilter === 'withClient'"
+                            class="px-4 py-1.5 rounded-lg text-[13px] font-semibold text-slate-500 transition-all flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span> With Client
+                        </button>
+                    </div>
                 </div>
                 <div class="flex items-center gap-5">
-                    <button
-                        class="px-5 py-3.5 bg-slate-50 text-slate-500 rounded-xl text-[14px] font-black uppercase flex items-center gap-5">
-                        <i data-lucide="file-text" class="w-4 h-4"></i> PDF
-                    </button>
-                    <button
-                        class="px-5 py-3.5 bg-slate-50 text-slate-500 rounded-xl text-[14px] font-black uppercase flex items-center gap-5">
-                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel
-                    </button>
                     <button routerLink="/admin-add-extinguisher"
                         class="px-7 py-2.5 bg-[#0B1437] text-white rounded-xl text-[14px] font-black uppercase flex items-center gap-5">
                         <i data-lucide="plus" class="w-4 h-4"></i> Add

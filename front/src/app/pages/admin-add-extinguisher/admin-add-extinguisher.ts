@@ -27,7 +27,8 @@ export class AdminAddExtinguisher implements AfterViewInit {
     type: 'Powder',
     capacity: '6',
     expiry_date: '',
-    count: 1
+    count: 1,
+    price: 0
   };
 
   categories = ['Water', 'CO2', 'Powder', 'Foam'];

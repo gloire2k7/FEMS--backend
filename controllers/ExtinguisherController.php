@@ -53,10 +53,10 @@ class ExtinguisherController extends Controller
     {
         require_once __DIR__ . '/../helpers/qr_helper.php';
 
-        if (!$this->validateRequiredParams(['type', 'capacity'], $data)) {
+        if (!$this->validateRequiredParams(['type', 'capacity', 'price'], $data)) {
             if ($isBulk)
                 return ["error" => "Missing required fields"];
-            $this->jsonResponse(["message" => "Type and capacity are required fields"], 400);
+            $this->jsonResponse(["message" => "Type, capacity and price are required fields"], 400);
         }
 
         $data['client_id'] = isset($data['client_id']) ? $data['client_id'] : null;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,45 +11,93 @@ import { OrderService } from '../../services/order.service';
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })
-export class Checkout {
-  paymentMethod = 'card';
+export class Checkout implements OnInit {
+  private router = inject(Router);
+  private orderService = inject(OrderService);
 
-  orderItems = [
-    {
-      name: 'ABC Dry Powder',
-      details: '6kg • Portable',
-      qty: 2,
-      price: 60,
-      total: 120,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&q=80'
-    },
-    {
-      name: 'Foam Extinguisher',
-      details: '9 Litre • Wheeled',
-      qty: 1,
-      price: 85,
-      total: 85,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&q=80'
+  cartItems: any[] = [];
+  paymentMethod = 'momo';
+
+  user: any = null;
+  
+  deliveryForm = {
+    company_name: '',
+    full_name: '',
+    phone: '',
+    email: '',
+    delivery_address: '',
+    city: '',
+    notes: ''
+  };
+
+  isPlacingOrder = false;
+  successMessage = '';
+  errorMessage = '';
+
+  ngOnInit() {
+    const stored = sessionStorage.getItem('fems_cart');
+    this.cartItems = stored ? JSON.parse(stored) : [];
+    if (this.cartItems.length === 0) {
+      this.router.navigate(['/shop']);
     }
-  ];
 
-  subtotal = 205.00;
-  taxes = 20.50;
-  deliveryFee = 15.00;
-  grandTotal = 240.50;
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      this.user = JSON.parse(userStr);
+      if (this.user) {
+        this.deliveryForm.company_name = this.user.company_name || '';
+        this.deliveryForm.full_name = this.user.contact_person || this.user.name || '';
+        this.deliveryForm.phone = this.user.phone || '';
+        this.deliveryForm.email = this.user.email || '';
+        this.deliveryForm.delivery_address = this.user.address || '';
+      }
+    }
+  }
 
-  constructor(private router: Router, private orderService: OrderService) { }
+  get subtotal() {
+    return this.cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  }
+
+  // Template aliases for backward-compatible HTML
+  get orderItems() { return this.cartItems; }
+  get taxes() { return 0; }
+  get deliveryFee() { return 0; }
+  get grandTotal() { return this.subtotal; }
 
   placeOrder() {
-    this.orderService.placeOrder({
-      companyName: 'TechSafe Industries Ltd.',
-      productNames: this.orderItems.map(i => i.name).join(', '),
-      category: 'Fire Safety',
-      amount: this.grandTotal,
-      status: 'Pending Approval'
-    });
-    alert('Order placed successfully! Waiting for admin approval.');
-    this.router.navigate(['/dashboard']);
+    if (!this.deliveryForm.delivery_address || !this.deliveryForm.full_name) {
+      this.errorMessage = 'Please fill in all required delivery details.';
+      return;
+    }
+
+    this.isPlacingOrder = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // Place each cart item as a separate order
+    const orderPromises = this.cartItems.map(item =>
+      this.orderService.placeOrder({
+        type: item.type,
+        capacity: item.capacity,
+        quantity: item.quantity,
+        unit_price: item.price,
+        delivery_address: this.deliveryForm.delivery_address,
+        payment_method: this.paymentMethod,
+        notes: this.deliveryForm.notes
+      }).toPromise()
+    );
+
+    Promise.all(orderPromises)
+      .then(() => {
+        this.isPlacingOrder = false;
+        this.successMessage = 'Your order has been placed! Awaiting admin approval.';
+        sessionStorage.removeItem('fems_cart');
+        setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+      })
+      .catch(err => {
+        this.isPlacingOrder = false;
+        this.errorMessage = err?.error?.message || 'Failed to place order. Please try again.';
+      });
   }
 
   backToCart() {

@@ -37,13 +37,35 @@ class AuthController extends Controller
             $_SESSION['role_name'] = $role ? $role['name'] : '';
             $_SESSION['company_id'] = $user['company_id'];
 
+            // Fetch Client Details if associated
+            $clientData = null;
+            if (!empty($user['company_id'])) {
+                $stmt = $db->prepare("SELECT company_name, contact_person, phone, address FROM clients WHERE id = :id");
+                $stmt->bindParam(':id', $user['company_id']);
+                $stmt->execute();
+                $clientData = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+
+            $_SESSION['user'] = [
+                "id" => $user['id'],
+                "name" => $user['name'],
+                "email" => $user['email'],
+                "role_name" => $_SESSION['role_name'],
+                "company_id" => $user['company_id']
+            ];
+
             $this->jsonResponse([
                 "message" => "Login successful",
                 "user" => [
                     "id" => $user['id'],
                     "name" => $user['name'],
                     "email" => $user['email'],
-                    "role" => $_SESSION['role_name']
+                    "role" => $_SESSION['role_name'],
+                    "company_id" => $user['company_id'],
+                    "company_name" => $clientData['company_name'] ?? null,
+                    "contact_person" => $clientData['contact_person'] ?? null,
+                    "phone" => $clientData['phone'] ?? null,
+                    "address" => $clientData['address'] ?? null
                 ]
             ]);
         }

@@ -62,44 +62,39 @@
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Company
                             Name</label>
-                        <input type="text" placeholder="Acme Corp"
-                            class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all">
+                        <input type="text" [(ngModel)]="deliveryForm.company_name" [readonly]="!!user?.company_name"
+                            class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all"
+                            [ngClass]="{'bg-slate-50 text-slate-500 cursor-not-allowed': !!user?.company_name}">
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Contact Person
                             <span class="text-red-500">*</span></label>
-                        <input type="text" placeholder="John Doe"
+                        <input type="text" [(ngModel)]="deliveryForm.full_name"
                             class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all">
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Phone Number <span
                                 class="text-red-500">*</span></label>
-                        <input type="text" placeholder="+1 (555) 000-0000"
+                        <input type="text" [(ngModel)]="deliveryForm.phone"
                             class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all">
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Email Address
                             <span class="text-red-500">*</span></label>
-                        <input type="email" placeholder="john@example.com"
-                            class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all">
+                        <input type="email" [(ngModel)]="deliveryForm.email" [readonly]="!!user?.email"
+                            class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all"
+                            [ngClass]="{'bg-slate-50 text-slate-500 cursor-not-allowed': !!user?.email}">
                     </div>
                     <div class="col-span-2 flex flex-col gap-1.5">
                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Delivery Address
                             <span class="text-red-500">*</span></label>
-                        <textarea placeholder="Street, City, Postal Code" rows="3"
+                        <textarea [(ngModel)]="deliveryForm.delivery_address" rows="3"
                             class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all resize-none"></textarea>
                     </div>
                     <div class="col-span-2 flex flex-col gap-1.5">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Delivery
-                            Instructions</label>
-                        <input type="text" placeholder="e.g., Use rear entrance, call upon arrival"
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Delivery Instructions</label>
+                        <input type="text" [(ngModel)]="deliveryForm.notes" placeholder="e.g., Use rear entrance, call upon arrival"
                             class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold placeholder:text-slate-300 outline-none focus:border-slate-400 shadow-sm transition-all">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Preferred Delivery
-                            Date</label>
-                        <input type="date"
-                            class="px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 outline-none focus:border-slate-400 shadow-sm transition-all">
                     </div>
                 </div>
             </div>
@@ -190,15 +185,12 @@
                     <!-- ITEMS -->
                     <div class="flex flex-col gap-5 mb-8">
                         <div *ngFor="let item of orderItems" class="flex items-center gap-4">
-                            <img [src]="item.image" class="w-12 h-12 rounded-lg object-cover border border-slate-100"
-                                alt="">
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-[12px] font-black text-[#0B1228] leading-tight">{{ item.name }}</h4>
-                                <p class="text-[10px] font-medium text-slate-400 mb-0.5">{{ item.details }}</p>
-                                <p class="text-[10px] font-bold text-slate-500">Qty {{ item.qty }} @ ${{ item.price
-                                    }}.00</p>
+                                <h4 class="text-[12px] font-black text-[#0B1228] leading-tight">{{ item.type }} Extinguisher</h4>
+                                <p class="text-[10px] font-medium text-slate-400 mb-0.5">Capacity: {{ item.capacity }}</p>
+                                <p class="text-[10px] font-bold text-slate-500">Qty {{ item.quantity }} @ {{ item.price | number:'1.0-0' }} RWF</p>
                             </div>
-                            <span class="text-[12px] font-black text-[#0B1228] shrink-0">${{ item.total }}.00</span>
+                            <span class="text-[12px] font-black text-[#0B1228] shrink-0">{{ (item.price * item.quantity) | number:'1.0-0' }} RWF</span>
                         </div>
                     </div>
 
@@ -206,22 +198,22 @@
                     <div class="flex flex-col gap-3 py-6 border-y border-slate-100 mb-6">
                         <div class="flex items-center justify-between">
                             <span class="text-[12px] font-medium text-slate-500">Subtotal</span>
-                            <span class="text-[12px] font-black text-[#0B1228]">${{ subtotal }}.00</span>
+                            <span class="text-[12px] font-black text-[#0B1228]">{{ subtotal | number:'1.0-0' }} RWF</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="text-[12px] font-medium text-slate-500">Taxes (VAT 10%)</span>
-                            <span class="text-[12px] font-black text-[#0B1228]">${{ taxes }}.00</span>
+                            <span class="text-[12px] font-black text-[#0B1228]">{{ taxes | number:'1.0-0' }} RWF</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="text-[12px] font-medium text-slate-500">Delivery Fee</span>
-                            <span class="text-[12px] font-black text-[#0B1228]">${{ deliveryFee }}.00</span>
+                            <span class="text-[12px] font-black text-[#0B1228]">{{ deliveryFee | number:'1.0-0' }} RWF</span>
                         </div>
                     </div>
 
                     <!-- GRAND TOTAL -->
                     <div class="flex items-end justify-between mb-8">
                         <span class="text-[13px] font-black text-[#0B1228] mb-1">Grand Total</span>
-                        <span class="text-[26px] font-black text-[#0B1228] leading-none">${{ grandTotal }}</span>
+                        <span class="text-[26px] font-black text-[#0B1228] leading-none">{{ grandTotal | number:'1.0-0' }} RWF</span>
                     </div>
 
                     <div class="text-center mb-6">

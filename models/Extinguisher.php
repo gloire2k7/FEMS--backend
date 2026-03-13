@@ -6,16 +6,18 @@ class Extinguisher extends Model
 
     public function create($data)
     {
-        $query = "INSERT INTO " . $this->table . " (serial_number, qr_code_path, label_pdf_path, type, capacity, status, manufacturing_date, filling_date, expiry_date, client_id, location_id) VALUES (:serial_number, :qr_code_path, :label_pdf_path, :type, :capacity, :status, :manufacturing_date, :filling_date, :expiry_date, :client_id, :location_id)";
+        $query = "INSERT INTO " . $this->table . " (serial_number, qr_code_path, label_pdf_path, type, capacity, price, status, manufacturing_date, filling_date, expiry_date, client_id, location_id) VALUES (:serial_number, :qr_code_path, :label_pdf_path, :type, :capacity, :price, :status, :manufacturing_date, :filling_date, :expiry_date, :client_id, :location_id)";
         $stmt = $this->db->prepare($query);
 
         $status = isset($data['status']) ? $data['status'] : 'filled';
+        $price = isset($data['price']) ? $data['price'] : 0;
 
         $stmt->bindParam(':serial_number', $data['serial_number']);
         $stmt->bindParam(':qr_code_path', $data['qr_code_path']);
         $stmt->bindParam(':label_pdf_path', $data['label_pdf_path']);
         $stmt->bindParam(':type', $data['type']);
         $stmt->bindParam(':capacity', $data['capacity']);
+        $stmt->bindParam(':price', $price);
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':manufacturing_date', $data['manufacturing_date']);
         $stmt->bindParam(':filling_date', $data['filling_date']);
@@ -44,6 +46,7 @@ class Extinguisher extends Model
             serial_number = :serial_number, 
             type = :type, 
             capacity = :capacity, 
+            price = :price,
             status = :status, 
             manufacturing_date = :manufacturing_date, 
             filling_date = :filling_date, 
@@ -55,9 +58,12 @@ class Extinguisher extends Model
             WHERE id = :id";
         $stmt = $this->db->prepare($query);
 
+        $price = isset($data['price']) ? $data['price'] : 0;
+
         $stmt->bindParam(':serial_number', $data['serial_number']);
         $stmt->bindParam(':type', $data['type']);
         $stmt->bindParam(':capacity', $data['capacity']);
+        $stmt->bindParam(':price', $price);
         $stmt->bindParam(':status', $data['status']);
         $stmt->bindParam(':manufacturing_date', $data['manufacturing_date']);
         $stmt->bindParam(':filling_date', $data['filling_date']);
@@ -70,6 +76,18 @@ class Extinguisher extends Model
 
         return $stmt->execute();
     }
+    public function findById($id)
+    {
+        $query = "SELECT fe.*, c.company_name as client_name 
+                  FROM " . $this->table . " fe
+                  LEFT JOIN clients c ON fe.client_id = c.id
+                  WHERE fe.id = :id LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function findAvailableInStock($type, $capacity, $limit)
     {
         $query = "SELECT * FROM " . $this->table . " WHERE client_id IS NULL AND type = :type AND capacity = :capacity LIMIT :limit";
@@ -93,7 +111,10 @@ class Extinguisher extends Model
 
     public function findBySerialNumber($serial)
     {
-        $query = "SELECT * FROM " . $this->table . " WHERE serial_number = :serial LIMIT 1";
+        $query = "SELECT fe.*, c.company_name as client_name 
+                  FROM " . $this->table . " fe
+                  LEFT JOIN clients c ON fe.client_id = c.id
+                  WHERE fe.serial_number = :serial LIMIT 1";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':serial', $serial);
         $stmt->execute();

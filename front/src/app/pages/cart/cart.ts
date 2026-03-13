@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -10,60 +10,74 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './cart.html',
   styleUrl: './cart.css',
 })
-export class Cart {
+export class Cart implements OnInit {
+  private router = inject(Router);
 
-  constructor(private router: Router) { }
+  items: any[] = [];
+  client: any = null;
 
-  items = [
-    {
-      name: 'FireGuard Pro - CO₂ Series',
-      type: 'Carbon Dioxide (CO₂)',
-      capacity: '5kg',
-      price: 120,
-      qty: 2,
-      image: ''
-    },
-    {
-      name: 'ABC Dry Powder Classic',
-      type: 'Dry Powder',
-      capacity: '9kg',
-      price: 85,
-      qty: 5,
-      image: ''
-    },
-    {
-      name: 'AFFF Foam Sprayer',
-      type: 'Foam',
-      capacity: '6L',
-      price: 95,
-      qty: 1,
-      image: ''
+  ngOnInit() {
+    const stored = sessionStorage.getItem('fems_cart');
+    this.items = stored ? JSON.parse(stored) : [];
+    
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      this.client = JSON.parse(userStr);
     }
-  ];
+  }
 
   get subtotal() {
-    return this.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    return this.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   }
 
   get taxes() {
-    return Math.round(this.subtotal * 0.1);
+    return 0; // No tax applied in RWF; keeping for template compatibility
   }
 
-  get deliveryFee() { return 45; }
+  get deliveryFee() {
+    return 0; // Free delivery; keeping for template compatibility
+  }
 
   get grandTotal() {
-    return this.subtotal + this.taxes + this.deliveryFee;
+    return this.subtotal;
   }
 
   get totalItems() {
-    return this.items.reduce((sum, i) => sum + i.qty, 0);
+    return this.items.reduce((sum, i) => sum + i.quantity, 0);
   }
 
-  increase(item: any) { item.qty++; }
-  decrease(item: any) { if (item.qty > 1) item.qty--; }
-  removeItem(index: number) { this.items.splice(index, 1); }
-  clearCart() { this.items = []; }
+  increase(item: any) {
+    if (item.quantity < item.total_in_stock) {
+      item.quantity++;
+      this.saveCart();
+    }
+  }
+
+  decrease(item: any) {
+    if (item.quantity > 1) {
+      item.quantity--;
+      this.saveCart();
+    }
+  }
+
+  removeItem(index: number) {
+    this.items.splice(index, 1);
+    this.saveCart();
+  }
+
+  clearCart() {
+    this.items = [];
+    this.saveCart();
+  }
+
+  saveCart() {
+    sessionStorage.setItem('fems_cart', JSON.stringify(this.items));
+  }
 
   continueShopping() { this.router.navigate(['/shop']); }
-  goToCheckOut() { this.router.navigate(['/checkout']); }
+
+  goToCheckOut() {
+    if (this.items.length === 0) return;
+    this.router.navigate(['/checkout']);
+  }
 }

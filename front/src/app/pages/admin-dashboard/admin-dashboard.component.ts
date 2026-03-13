@@ -1,7 +1,7 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterLink, RouterLinkActive } from '@angular/router';
-import { OrderService, Order } from '../../services/order.service';
+import { OrderService } from '../../services/order.service';
 
 declare const lucide: { createIcons: (opts?: { nameAttr?: string }) => void } | undefined;
 
@@ -13,27 +13,28 @@ declare const lucide: { createIcons: (opts?: { nameAttr?: string }) => void } | 
     styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent implements AfterViewInit, OnInit {
+    private orderService = inject(OrderService);
     inspectionsOpen = true;
-    orders: Order[] = [];
-
-    constructor(private orderService: OrderService) {}
+    orders: any[] = [];
+    pendingCount = 0;
 
     ngOnInit() {
-        this.orderService.orders$.subscribe(orders => {
+        this.orderService.getOrders().subscribe(orders => {
             this.orders = orders;
+            this.pendingCount = orders.filter((o: any) => o.status === 'pending').length;
         });
     }
 
-    approveOrder(id: string) {
-        this.orderService.approveOrder(id);
+    approveOrder(id: number) {
+        this.orderService.approveOrder(id).subscribe(() => {
+            this.ngOnInit(); // refresh
+        });
     }
 
-    cancelOrder(id: string) {
-        this.orderService.cancelOrder(id);
-    }
-
-    get pendingCount() {
-        return this.orders.filter(o => o.status === 'Pending Approval').length;
+    denyOrder(id: number) {
+        this.orderService.denyOrder(id).subscribe(() => {
+            this.ngOnInit(); // refresh
+        });
     }
 
     toggleInspections() {
@@ -51,11 +52,7 @@ export class AdminDashboardComponent implements AfterViewInit, OnInit {
                 lucide.createIcons();
             }
         };
-
-        // Immediate run
         run();
-
-        // Sequence of retries to catch any late rendering
         [100, 300, 600, 1000, 2000].forEach(delay => {
             setTimeout(run, delay);
         });

@@ -40,6 +40,38 @@ $router->get('/api/orders/{id}', ['OrderController', 'show']);
 $router->put('/api/orders/{id}/grant', ['OrderController', 'grant']);
 $router->put('/api/orders/{id}/confirm', ['OrderController', 'confirm']);
 
+// Shop Products (grouped stock for clients)
+$router->get('/api/shop/products', function () {
+    try {
+        $db = Database::getConnection();
+        $query = "
+            SELECT type, capacity, CAST(price AS UNSIGNED) as price,
+                   COUNT(*) as total_in_stock
+            FROM fire_extinguishers
+            WHERE client_id IS NULL AND status = 'filled'
+            GROUP BY type, capacity, price
+            ORDER BY type, capacity
+        ";
+        $stmt = $db->prepare($query);
+        $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Ensure numbers are numbers
+        $products = array_map(function($p) {
+            $p['price'] = (int)$p['price'];
+            $p['total_in_stock'] = (int)$p['total_in_stock'];
+            return $p;
+        }, $products);
+
+        header('Content-Type: application/json');
+        echo json_encode($products);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(["message" => "Internal Server Error", "error" => $e->getMessage()]);
+    }
+    exit;
+});
+
 // Services (Refill & Maintenance)
 $router->post('/api/extinguishers/{id}/refill-request', ['ServiceController', 'requestRefill']);
 $router->post('/api/extinguishers/{id}/maintenance-request', ['ServiceController', 'requestMaintenance']);
