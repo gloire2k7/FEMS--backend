@@ -151,7 +151,13 @@ class ExtinguisherController extends Controller
     public function show($id)
     {
         AuthMiddleware::check();
-        $ext = $this->extModel->findById($id);
+        
+        if (is_numeric($id)) {
+            $ext = $this->extModel->findById($id);
+        } else {
+            $ext = $this->extModel->findBySerialNumber($id);
+        }
+
         if ($ext) {
             $this->jsonResponse($ext);
         }

@@ -1,4 +1,4 @@
-﻿<div class="flex h-screen bg-[#F4F7FE] font-['Poppins'] overflow-hidden">
+<div class="flex h-screen bg-[#F4F7FE] font-['Poppins'] overflow-hidden">
     <!-- SIDEBAR -->
     <aside class="w-64 bg-[#0B1437] shrink-0 flex flex-col h-screen sticky top-0 z-50">
         <!-- LOGO SECTION -->
@@ -362,7 +362,8 @@
             <div class="flex justify-between items-center bg-white p-8 rounded-[16px] shadow-sm">
                 <div class="relative w-96">
                     <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" placeholder="Search by extinguisher ID..."
+                    <input type="text" [(ngModel)]="searchExtinguisherQuery" (ngModelChange)="applyFilter()"
+                        placeholder="Search by serial number or type..."
                         class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-[15px] focus:outline-none placeholder:text-slate-400 font-medium tracking-tight">
                 </div>
                 <div class="flex items-center gap-5">
@@ -382,44 +383,58 @@
             </div>
 
             <!-- TABLE -->
-            <div class="bg-white rounded-[24px] shadow-sm overflow-hidden pb-4">
-                <div class="overflow-x-auto">
+            <div class="bg-white rounded-[24px] shadow-sm overflow-hidden pb-4 min-h-[400px] flex flex-col">
+                
+                <!-- Loading State -->
+                <div *ngIf="isLoading" class="flex-1 flex flex-col items-center justify-center p-20 space-y-4">
+                    <div class="w-10 h-10 border-4 border-navy-main border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Fetching units...</p>
+                </div>
+
+                <!-- No Data State -->
+                <div *ngIf="!isLoading && paginatedExtinguishers.length === 0" class="flex-1 flex flex-col items-center justify-center p-20 space-y-6">
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300">
+                        <i data-lucide="package-search" class="w-8 h-8"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-[16px] font-black text-navy-main uppercase tracking-tight">No Extinguishers Recorded</h3>
+                        <p class="text-[13px] text-slate-400 font-medium mt-1">There are no units found in the database. Start by adding one.</p>
+                    </div>
+                    <button routerLink="/admin-add-extinguisher" class="px-8 py-3 bg-[#0B1437] text-white rounded-xl text-xs font-black uppercase tracking-widest">
+                        Add New Unit
+                    </button>
+                </div>
+
+                <div *ngIf="!isLoading && paginatedExtinguishers.length > 0" class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="border-b border-slate-50">
-                                <th class="table-header">ID</th>
+                                <th class="table-header">Serial Number</th>
                                 <th class="table-header">TYPE</th>
                                 <th class="table-header">CAPACITY</th>
-                                <th class="table-header">DATE REFILLED</th>
+                                <th class="table-header">LAST FILLING</th>
                                 <th class="table-header">STATUS</th>
-                                <th class="table-header">LAST INSPECTION</th>
-                                <th class="table-header">NEXT INSPECTION</th>
+                                <th class="table-header">EXPIRY</th>
                                 <th class="table-header">ACTION</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
-                            <tr *ngFor="let ext of extinguishers">
-                                <td class="py-6 px-5 data-cell-main">{{ext.id}}</td>
-                                <td class="py-6 px-5 data-cell-sub">{{ext.type}}</td>
-                                <td class="py-6 px-5 data-cell-sub">{{ext.capacity}}</td>
-                                <td class="py-6 px-5 data-cell-sub">{{ext.dateRefilled}}</td>
+                            <tr *ngFor="let ext of paginatedExtinguishers">
+                                <td class="py-6 px-5 data-cell-main">{{ext.serial_number}}</td>
+                                <td class="py-6 px-5 data-cell-sub uppercase">{{ext.type}}</td>
+                                <td class="py-6 px-5 data-cell-sub">{{ext.capacity}} KG</td>
+                                <td class="py-6 px-5 data-cell-sub">{{ext.filling_date || 'N/A'}}</td>
                                 <td class="py-6 px-5">
-                                    <span class="status-pill" [ngClass]="{
-                                        'status-passed': ext.status === 'Passed',
-                                        'status-expired': ext.status === 'Expired',
-                                        'status-almost': ext.status === 'Almost Expired'
-                                    }">
-                                        <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                                    <span class="status-pill" [ngClass]="getExtinguisherStatusClass(ext.status)">
+                                        <div class="w-1.5 h-1.5 rounded-full" [ngClass]="getStatusIconColor(ext.status)"></div>
                                         {{ext.status}}
                                     </span>
                                 </td>
-                                <td class="py-6 px-5 data-cell-sub">{{ext.lastInspection}}</td>
-                                <td class="py-6 px-5"
-                                    [ngClass]="ext.status === 'Passed' ? 'data-cell-sub' : 'text-[#E03E3E] text-[14px] font-bold'">
-                                    {{ext.nextInspection}}
+                                <td class="py-6 px-5" [ngClass]="getNextInspectionClass(ext.status)">
+                                    {{ext.expiry_date || 'N/A'}}
                                 </td>
                                 <td class="py-6 px-5">
-                                    <button [routerLink]="['/admin-view-extinguisher', ext.id]"
+                                    <button [routerLink]="['/admin-view-extinguisher', ext.serial_number]"
                                         class="btn-action">View</button>
                                 </td>
                             </tr>
@@ -428,16 +443,28 @@
                 </div>
 
                 <!-- PAGINATION -->
-                <div class="px-6 py-6 border-t border-slate-50 flex justify-between items-center">
-                    <p class="text-[14px] font-bold text-slate-400 uppercase tracking-widest">Showing 8 of 24
-                        extinguishers</p>
+                <div *ngIf="!isLoading && paginatedExtinguishers.length > 0" class="px-6 py-6 border-t border-slate-50 flex justify-between items-center mt-auto">
+                    <p class="text-[12px] font-black text-slate-400 uppercase tracking-widest">
+                        Showing {{ (currentPage-1)*pageSize + 1 }} - {{ Math.min(currentPage*pageSize, filteredExtinguishers.length) }} of {{ filteredExtinguishers.length }}
+                    </p>
                     <div class="flex items-center gap-5">
-                        <button
-                            class="px-5 py-3 text-[14px] font-black text-slate-400 uppercase hover:text-navy-main">Previous</button>
-                        <button class="w-8 h-8 rounded-lg bg-[#0B1437] text-white text-[14px] font-black">1</button>
-                        <button class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 text-[14px] font-black">2</button>
-                        <button
-                            class="px-5 py-3 text-[14px] font-black text-slate-400 uppercase hover:text-navy-main">Next</button>
+                        <button (click)="changePage(currentPage-1)" [disabled]="currentPage === 1"
+                            class="px-5 py-3 text-[14px] font-black text-slate-400 uppercase hover:text-navy-main disabled:opacity-30">Previous</button>
+                        
+                        <div class="flex items-center gap-2">
+                            <button *ngFor="let p of [].constructor(totalPages || 0); let i = index" 
+                                (click)="changePage(i+1)"
+                                [class.bg-[#0B1437]]="currentPage === i+1"
+                                [class.text-white]="currentPage === i+1"
+                                [class.bg-slate-50]="currentPage !== i+1"
+                                [class.text-slate-400]="currentPage !== i+1"
+                                class="w-8 h-8 rounded-lg text-[14px] font-black transition-all">
+                                {{ i+1 }}
+                            </button>
+                        </div>
+
+                        <button (click)="changePage(currentPage+1)" [disabled]="currentPage === totalPages"
+                            class="px-5 py-3 text-[14px] font-black text-slate-400 uppercase hover:text-navy-main disabled:opacity-30">Next</button>
                     </div>
                 </div>
             </div>

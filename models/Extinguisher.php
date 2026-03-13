@@ -90,4 +90,13 @@ class Extinguisher extends Model
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
+
+    public function findBySerialNumber($serial)
+    {
+        $query = "SELECT * FROM " . $this->table . " WHERE serial_number = :serial LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':serial', $serial);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

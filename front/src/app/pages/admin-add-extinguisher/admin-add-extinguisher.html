@@ -1,4 +1,4 @@
-﻿<div class="flex h-screen bg-[#F8FAFC] font-['Poppins'] overflow-hidden">
+<div class="flex h-screen bg-[#F8FAFC] font-['Poppins'] overflow-hidden">
     <!-- SIDEBAR -->
     <aside class="w-48 bg-[#0B1437] shrink-0 flex flex-col h-screen sticky top-0">
         <!-- LOGO -->
@@ -155,104 +155,89 @@
 
         <!-- PAGE CONTENT -->
         <div class="p-8 max-w-4xl mx-auto w-full space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <!-- SECTION: UPLOAD -->
-            <div class="space-y-4">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Upload File</h3>
-                <div
-                    class="upload-container rounded-[24px] p-12 flex flex-col items-center justify-center space-y-4 cursor-pointer hover:bg-blue-50/50 transition-all border-none">
-                    <div
-                        class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:text-blue-500 transition-colors">
-                        <i data-lucide="upload-cloud" class="icon-md"></i>
-                    </div>
-                    <p class="text-[14px] font-bold text-slate-400">Max 100 MB, PNG, JPEG, MP3, MP4</p>
-                    <button
-                        class="px-8 py-2.5 bg-black text-white rounded-xl text-[14px] font-black hover:bg-slate-800 transition-all active:scale-95">Browse
-                        File</button>
-                </div>
+            
+            <!-- Success/Error Feedback -->
+            <div *ngIf="successMessage" class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-6 py-4 rounded-2xl flex items-center gap-4 animate-in zoom-in-95">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <p class="text-xs font-bold uppercase tracking-wider">{{ successMessage }}</p>
+            </div>
+            <div *ngIf="errorMessage" class="bg-red-50 border border-red-100 text-red-700 px-6 py-4 rounded-2xl flex items-center gap-4 animate-in zoom-in-95">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <p class="text-xs font-bold uppercase tracking-wider">{{ errorMessage }}</p>
             </div>
 
-            <!-- SECTION: PURCHASE TYPE -->
-            <div class="space-y-4">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Purchase Type</h3>
-                <div class="grid grid-cols-3 gap-6">
-                    <div (click)="setPurchaseType('Fixed Price')"
-                        [ngClass]="purchaseType === 'Fixed Price' ? 'border-blue-600 ring-1 ring-blue-600 bg-blue-50/20' : 'border-slate-100 bg-white'"
-                        class="type-card p-8 rounded-[24px] border border-2 cursor-pointer hover:shadow-md transition-all space-y-3">
-                        <h4 class="text-xs font-black text-slate-900">Fixed Price</h4>
-                        <p class="text-[13px] font-bold text-slate-400 leading-relaxed">Set fixed price for people to
-                            buy your product instantly</p>
-                    </div>
-                    <div (click)="setPurchaseType('Timed Auction')"
-                        [ngClass]="purchaseType === 'Timed Auction' ? 'border-blue-600 ring-1 ring-blue-600 bg-blue-50/20' : 'border-slate-100 bg-white'"
-                        class="type-card p-8 rounded-[24px] border border-2 cursor-pointer hover:shadow-md transition-all space-y-3 opacity-50">
-                        <h4 class="text-xs font-black text-slate-900">Timed Auction</h4>
-                        <p class="text-[13px] font-bold text-slate-400 leading-relaxed">Set fixed price for people to
-                            buy your product instantly</p>
-                    </div>
-                    <div (click)="setPurchaseType('Open for Bids')"
-                        [ngClass]="purchaseType === 'Open for Bids' ? 'border-blue-600 ring-1 ring-blue-600 bg-blue-50/20' : 'border-slate-100 bg-white'"
-                        class="type-card p-8 rounded-[24px] border border-2 cursor-pointer hover:shadow-md transition-all space-y-3 opacity-50">
-                        <h4 class="text-xs font-black text-slate-900">Open for Bids</h4>
-                        <p class="text-[13px] font-bold text-slate-400 leading-relaxed">Set fixed price for people to
-                            buy your product instantly</p>
-                    </div>
+            <div
+                class="bg-[#0B1437] rounded-[32px] p-10 text-white relative overflow-hidden flex items-center justify-between shadow-2xl shadow-blue-900/20">
+                <div class="relative z-10">
+                    <h1 class="text-3xl font-black mb-1">New Inventory Entry</h1>
+                    <p class="text-[13px] text-slate-400 font-medium">Add new fire extinguishers to the system in bulk or individually.</p>
+                </div>
+                <!-- Abstract decorations -->
+                <div class="absolute right-0 top-0 w-64 h-64 bg-blue-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                <div class="absolute right-10 top-2 opacity-10">
+                    <i data-lucide="package-plus" class="w-24 h-24"></i>
                 </div>
             </div>
 
             <!-- SECTION: MAIN DETAILS -->
-            <div class="space-y-6">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Main Details</h3>
-
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Title</label>
-                        <input type="text" [(ngModel)]="formData.title"
-                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+            <div class="space-y-6 bg-white p-10 rounded-[32px] border border-slate-100 shadow-sm">
+                <div class="flex items-center gap-5 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i data-lucide="info" class="w-5 h-5 text-blue-600"></i>
                     </div>
-                    <div class="space-y-3">
-                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Price</label>
-                        <input type="text" [(ngModel)]="formData.price"
-                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                    <div>
+                        <h3 class="text-sm font-black text-[#0B1437] uppercase tracking-widest">Extinguisher Specifications</h3>
+                        <p class="text-[12px] font-medium text-slate-400">Provide the technical details for the units.</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-4 gap-6">
+                <div class="grid grid-cols-2 gap-8">
                     <div class="space-y-3">
-                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Capacity</label>
-                        <input type="text" [(ngModel)]="formData.capacity"
-                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                        <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                           <i data-lucide="hash" class="w-3 h-3"></i> Number of units
+                        </label>
+                        <input type="number" [(ngModel)]="formData.count" min="1" max="100"
+                            class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500/30 transition-all">
                     </div>
                     <div class="space-y-3">
-                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Category</label>
-                        <input type="text" [(ngModel)]="formData.category"
-                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
-                    </div>
-                    <div class="space-y-3">
-                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Origin</label>
-                        <input type="text" [(ngModel)]="formData.origin"
-                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
-                    </div>
-                    <div class="space-y-3">
-                        <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Currency</label>
-                        <input type="text" [(ngModel)]="formData.currency"
-                            class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20">
+                        <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="tag" class="w-3 h-3"></i> Category
+                        </label>
+                        <select [(ngModel)]="formData.type"
+                            class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500/30 transition-all appearance-none cursor-pointer">
+                            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    <label class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Description</label>
-                    <textarea rows="6" [(ngModel)]="formData.description"
-                        class="w-full px-5 py-4 bg-slate-100/50 border-none rounded-[24px] text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500/20 resize-none"
-                        placeholder="Provide a detailed description of the extinguisher unit..."></textarea>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="weight" class="w-3 h-3"></i> Capacity (in Kg)
+                        </label>
+                        <input type="number" [(ngModel)]="formData.capacity"
+                            class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500/30 transition-all">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[12px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-3 h-3"></i> Expiry Date
+                        </label>
+                        <input type="date" [(ngModel)]="formData.expiry_date"
+                            class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500/30 transition-all">
+                    </div>
                 </div>
             </div>
 
             <!-- ACTIONS -->
-            <div class="pt-6">
-                <button (click)="saveUnit()"
-                    class="px-10 py-4 bg-[#0B1437] text-white rounded-2xl text-xs font-black hover:bg-blue-900 transition-all shadow-xl shadow-blue-900/20 active:scale-95 flex items-center gap-5">
-                    <i data-lucide="save" class="icon-xs"></i>
-                    Save Unit
+            <div class="flex items-center gap-6">
+                <button (click)="saveUnit()" [disabled]="isLoading"
+                    class="flex-1 py-5 bg-[#0B1437] text-white rounded-[24px] text-xs font-black hover:bg-blue-900 transition-all shadow-xl shadow-blue-900/20 active:scale-95 flex items-center justify-center gap-5 disabled:opacity-50">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    {{ isLoading ? 'Processing Creation...' : 'Confirm and Register' }}
+                </button>
+                <button routerLink="/admin-location-details"
+                    class="px-10 py-5 bg-white border-2 border-slate-100 text-slate-400 rounded-[24px] text-xs font-black hover:bg-slate-50 transition-all active:scale-95 uppercase tracking-widest">
+                    Cancel
                 </button>
             </div>
         </div>

@@ -1,4 +1,5 @@
 import { Component, AfterViewInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth.service';
@@ -8,7 +9,7 @@ declare const lucide: { createIcons: (opts?: { nameAttr?: string }) => void } | 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './signup.html',
   styleUrls: ['./signup.css']
 })

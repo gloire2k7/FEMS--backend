@@ -1,8 +1,8 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../services/product.service';
+import { ExtinguisherService } from '../../services/extinguisher.service';
 
 declare const lucide: { createIcons: (opts?: { nameAttr?: string }) => void } | undefined;
 
@@ -14,25 +14,28 @@ declare const lucide: { createIcons: (opts?: { nameAttr?: string }) => void } | 
   styleUrl: './admin-add-extinguisher.css',
 })
 export class AdminAddExtinguisher implements AfterViewInit {
-  inspectionsOpen = true;
+  private extinguisherService = inject(ExtinguisherService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
-  constructor(private productService: ProductService, private router: Router) {}
+  inspectionsOpen = true;
+  isLoading = false;
+  successMessage = '';
+  errorMessage = '';
+
+  formData = {
+    type: 'Powder',
+    capacity: '6',
+    expiry_date: '',
+    count: 1
+  };
+
+  categories = ['Water', 'CO2', 'Powder', 'Foam'];
 
   toggleInspections() {
     this.inspectionsOpen = !this.inspectionsOpen;
     this.initIcons();
   }
-  purchaseType: string = 'Fixed Price';
-
-  formData = {
-    title: 'Fire extinguisher',
-    price: '30',
-    capacity: '6kg',
-    category: 'Powder',
-    origin: 'China',
-    currency: 'Dollars',
-    description: ''
-  };
 
   ngAfterViewInit() {
     this.initIcons();
@@ -50,20 +53,26 @@ export class AdminAddExtinguisher implements AfterViewInit {
     });
   }
 
-  setPurchaseType(type: string) {
-    this.purchaseType = type;
-  }
-
   saveUnit() {
-    this.productService.addProduct({
-      name: this.formData.title,
-      price: parseFloat(this.formData.price),
-      capacity: this.formData.capacity,
-      badge: this.formData.category.toUpperCase(),
-      supplier: 'Admin Upload',
-      model: 'ADM-' + Math.floor(Math.random() * 10000)
+    this.isLoading = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.cdr.detectChanges();
+
+    this.extinguisherService.bulkCreate(this.formData).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.successMessage = res.message || `Successfully registered ${this.formData.count} extinguishers!`;
+        // Reset count but keep type/capacity for quick entry
+        this.formData.count = 1;
+        this.cdr.detectChanges();
+        this.initIcons();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Failed to register extinguishers.';
+        this.cdr.detectChanges();
+      }
     });
-    alert('Extinguisher added successfully!');
-    this.router.navigate(['/shop']);
   }
 }
